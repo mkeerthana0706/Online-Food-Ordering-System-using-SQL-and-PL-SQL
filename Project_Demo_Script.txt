@@ -1,0 +1,213 @@
+-----Demo Script-------
+set serveroutput on;
+-----------------------------------------------Feature 1 (Sahithi)--------------------------------------------------------------
+select * from CUSTOMER_INFO;
+exec ADD_CUSTOMER ('Sahithi', '13459 Mountridge ave, Westland, Maryland', 'Maryland','21042', 'sahithi@gmail.com');
+/*Output: New customer ID: 8
+Explanation: Since there is no customer with the given name and mail id, a new row is inserted into CUSTOMER_INFO table. The result is also printed out.*/
+select * from CUSTOMER_INFO;
+
+exec ADD_CUSTOMER ('Stacey', '30A Leafcrest Ln, Fairfax, Virginia', 'Virginia','02111', 'stacey@gmail.com');
+/*Output: Client already exists.
+Explanation: Since, a person with same email id is present in the table, the above message is printed and the row is updated with new values.*/
+select * from CUSTOMER_INFO;
+
+------------------------------------------------Feature 2 (Sahithi)----------------------------------------------------------------
+
+
+-------------------------------------------------Feature 3 (Keerthana)---------------------------------------------------------------
+exec REST_CATEGORY('Break');
+select * from RESTAURANT_LIST;
+select * from RESTAURANT_CATEGORY;
+/*Output:
+Restaurant name: Dunkin Donuts, Average review score: 4.5, Average wait time: 3, Zipcode: 2111
+Restaurant name: Coffee cup, Average review score: 3.5, Average wait time: 15, Zipcode: 2111
+Explanation: There are only 2 restaurants with category name: Breakfast*/
+
+exec REST_CATEGORY('Ice cream');
+/*Output:
+No restaurants under that category
+Explanation: There are no restuarants under the category Ice cream*/
+
+-------------------------------------------------Feature 4 (Keerthana)------------------------------------------------------------------
+exec DISHES_OFFERED(35);
+select * from DISHES;
+/*Output:
+The dishes offered by Restaurant_ID 35 along with their prices are: 
+Dish name: Chicken Biryani, Price: 25
+Dish name: Chicken 65, Price: 20
+Explanation: The restaurant id 35 has 2 dishes namely chicken biryani and chicken 65*/
+
+exec DISHES_OFFERED(38);
+/*Output: No such restaurant
+Explanation: There is no restaurant with restaurant id 38*/
+
+-------------------------------------------------Feature 5 (Monica)-------------------------------------------------------------------
+select * from DISHES;
+select * from DISHES_IN_CART;
+exec CART_DISHES(61);
+select * from DISHES;
+select * from DISHES_IN_CART;
+/*Output:The dishes in the cart id: 61 are
+Dish id: 46 Dish name: Mango cake Dish price: 15 Quantity: 1
+Explanation: The cart with cart id 61 has 1 dish in the cart with quantity 1*/
+
+exec CART_DISHES(68);
+/*Output: Invalid cart id
+Explanation: There is no cart with cart ID: 68*/
+
+-------------------------------------------------Feature 6 (Monica)--------------------------------------------------------------------
+select * from DISHES_IN_CART;
+exec REMOVE_DISH(42, 64);
+/*Output: quantity reduced
+Explanation: Since cart 64 has 3 same dishes its quantity is reduced and updated to 2.*/
+select * from DISHES_IN_CART;
+
+select * from DISHES_IN_CART;
+exec REMOVE_DISH(43, 66);
+/*Output: dish removed
+Explanation: Since 66 cart id has 1 dish, the entire row is deleted*/
+select * from DISHES_IN_CART;
+
+exec REMOVE_DISH(48, 67);
+/*Output: invalid input
+Explanation: There is no cart with cart id 67.*/
+
+-------------------------------------------------Feature 7 (Sindhu)----------------------------------------------------------------------
+exec Update_order_status (73,'delivered', '22-Dec-2023');
+select * from message_table;
+select * from payment_details;
+select * from customer_order;
+/*Output: The above 3 tables are updated
+Explanation: input delivery_status is given as  delivered then the output there will be message inserted in message_table stating your order(order number) has been delivered 
+If input delivery_status is given as in progress no addtional action takes place
+If input delivery_status is given as cancelled a new row is inserted into payment_details table with corresponding customer_id,order_id and payment method as Credit Card and also will insert a new message_body into message_details saying your order(order number) has been cancelled and refund is issued.*/
+
+--------------------------------------------------Feature 8 (Sri Harsha)-------------------------------------------------------------------
+select * from CUSTOMER_REVIEW;
+select * from RESTAURANT_LIST;
+exec REVIEW_DISHES (4, 34, '25-DEC-2023',3,'Not as tasty as it used to be');
+/*Output: A row is inserted into CUSTOMER_REVIEW with new review id generated using sequence. And the corresponding average review score is updated in RESTAURANT_LIST table
+Explanation: The procedure checks whether the given inputs are valid customer id and restaurant id. Since, the input is valid, the procedure inserts into CUSTOMER_REVIEW table and updates RESTAURANT_LIST table.*/
+select * from CUSTOMER_REVIEW;
+select * from RESTAURANT_LIST;
+
+exec REVIEW_DISHES (4, 39, '25-DEC-2023',3,'Not as tasty as it used to be');
+/*Output: invalid restuarant ID
+Explanation: Since no restaurant with restaurant_id 39 exists, the above statement is printed*/
+
+exec REVIEW_DISHES (9, 39, '25-DEC-2023',3,'Not as tasty as it used to be');
+/*Output: invalid customer ID
+Explanation: Since no customer with customer_id 9 exists, the above statement is printed*/
+
+---------------------------------------------------Feature 9 (Sri Harsha)-----------------------------------------------------------------
+exec DISPLAY_REVIEWS(35);
+/*Output: 
+Following are the reviews for restaurant ID:35
+Review id: 55 ,Customer id: 5 ,Review date: 15-MAY-22 12.00.00.000000 AM ,Review score: 5 ,Review comments: AMAZING!
+Explanation: Input restaurant ID 35 is taken and its corresponding curtomer reviews are retreived and displayed.*/
+
+exec DISPLAY_REVIEWS(39);
+/*Output: Invalid restaurant ID.
+Explanation: Since, restaurant id 39 does not exists, the above output is printed.*/
+
+---------------------------------------------------Feature 10---------------------------------------------------------------
+exec ADD_DISHTOCART(10, 34, 46);
+/*Output: Invalid customer id
+Explanation: Since, customer id 10 does not exists, the above output is printed.*/
+
+exec ADD_DISHTOCART(1, 38, 46);
+/*Output: Invalid restaurant id
+Explanation: Since, restaurant id 38 does not exists, the above output is printed.*/
+
+exec ADD_DISHTOCART(1, 34, 49);
+/*Output: Invalid dish id
+Explanation: Since, dish id 49 does not exists, the above output is printed.*/
+
+select * from dishes_in_cart;
+select * from cart;
+exec ADD_DISHTOCART(1, 34, 46);
+select * from dishes_in_cart;
+select * from cart;  
+/*Output: no output is printed. The DISHES_IN_CART table is updated.
+Explanation: if the dish is already there, its quantity is increased by 1. The dish id 46 qunatity for customer 1 and restaurant id 34 is increased by 1.*/
+
+select * from dishes_in_cart;
+select * from cart; 
+exec ADD_DISHTOCART(7, 34, 45); 
+select * from dishes_in_cart;
+select * from cart;  
+/*Output: New cart id for customer id: 7 is 68
+Explanation: New cart id for customer id: 7 is 68, a row is added to both CART table and DISHES_IN_CART table with new cart id and input customer_id and restaurant_id*/
+
+-----------------------------------------------------Feature 11--------------------------------------------------------------
+select * from CART;
+select * from CUSTOMER_ORDER;
+DECLARE 
+deliveryFee float;
+tax float;
+total_amount float;
+BEGIN
+total_amount := TOTAL_AMOUNT_FOR_DISHES(65,sysdate,1,deliveryfee,tax);
+dbms_output.put_line('Delivery Fee : '||deliveryfee||',Tax : '||tax||',Total Amount : '||total_amount);
+END;
+/*Output: Delivery Fee : ,Tax : 5,Total Amount : 23.1
+Explanation:*/
+
+DECLARE 
+deliveryFee float;
+tax float;
+total_amount float;
+BEGIN
+total_amount := TOTAL_AMOUNT_FOR_DISHES(69,sysdate,1,deliveryfee,tax);
+dbms_output.put_line('Delivery Fee : '||deliveryfee||',Tax : '||tax||',Total Amount : '||total_amount);
+END;
+
+/*Output: Invalid card ID
+Explanation: Since the cart ID 69 does not exist, it prints out the above output.*/
+------------------------------------------------------Feature 13---------------------------------------------------------------
+set serveroutput on;
+
+select * from RESTAURANT_LIST;
+select * from FOOD_CATEGORY;
+
+exec ADVANCED_SEARCH (1,Category_List('Breakfast','Indian','Bakery'),2,31);
+/*Output: 
+Restaurant Name: Coffee cup Address: Wellington, Milwaukee, Wisconsin Status: open Average review score: 3.5 Zipcode: 2111 Average wait time: 15
+Restaurant Name: Dunkin Donuts Address: Pink Ave, Milwaukee, Wisconsin Status: open Average review score: 4.5 Zipcode: 2111 Average wait time: 3
+Explanation: The customer id 1 lives in the same zipcode as the restaurants under the list of categories mentioned in the inout and also wait time and average review score matches with the condition. Hence the above output is printed.*/
+
+exec ADVANCED_SEARCH (10,Category_List('Breakfast','Indian','Bakery'),2,31);
+/*Output: Invalid customer id
+Explanation: Since, there is no customer with customer id: 9, it is printing invalid customer id.*/
+
+------------------------------------------------------Feature 14---------------------------------------------------------------
+exec REST_RECOM (1);
+select * from CUSTOMER_ORDER;
+/*Output:
+Restaurants that the input customer has visited: 
+34
+31
+The above restaurants are also visited by: 
+1
+4
+The above customers also visit: 33 
+
+Explanation: The input customer ID is 1. Customer 1 visited restaurant 31 and 34. The customers who have visited restaurants 31 and 34 are 1 and 4 respectively. Now these 4 has visited restaurant 33.*/
+
+exec REST_RECOM (9);
+/*Output: Invalid customer id
+Explanation: Since there is no customer with customer ID 9, the procedure prints the above output and terminates.*/
+
+
+-----------------------------------------------------Feature 12----------------------------------------------------------------
+select * from CUSTOMER_ORDER;
+select * from DISHES_IN_ORDER;
+select * from DISHES_IN_CART;
+select * from CART;
+select * from MESSAGE_TABLE;
+select * from PAYMENT_DETAILS;
+exec GENERATE_ORDER (63,null, null, null, null, null);
+/*Output:
+Explanation:*/
+----------------------------------------------------END OF DEMO SCRIPT------------------------------------------------------

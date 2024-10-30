@@ -1,0 +1,818 @@
+--------------------------------------------------------------------GROUP 10---------------------------------------------
+drop table MESSAGE_TABLE cascade constraints;
+drop table PAYMENT_DETAILS cascade constraints;
+drop table DISHES_IN_ORDER cascade constraints;
+drop table CUSTOMER_ORDER cascade constraints;
+drop table DISHES_IN_CART cascade constraints;
+drop table CART cascade constraints;
+drop table CUSTOMER_REVIEW cascade constraints;
+drop table DISHES cascade constraints;
+drop table RESTAURANT_CATEGORY cascade constraints;
+drop table RESTAURANT_LIST cascade constraints;
+drop table FOOD_CATEGORY cascade constraints;
+drop table CUSTOMER_DISCOUNT cascade constraints;
+drop table SALES_TAX cascade constraints;
+drop table DISCOUNT_INFO cascade constraints;
+drop table CUSTOMER_INFO cascade constraints;
+-------------------------------------------------------------------------
+drop sequence SEQ_FOR_CUSTOMER_INFO;
+drop sequence SEQ_FOR_CUSTOMER_ORDER;
+drop sequence SEQ_FOR_MESSAGE_TABLE;
+drop sequence SEQ_FOR_PAYMENT_DETAILS;
+drop sequence SEQ_FOR_CUSTOMER_REVIEW;
+drop sequence SEQ_CART_ID;
+
+---------------------------------------------------------------------------
+create table CUSTOMER_INFO (
+customer_id int primary key,
+customer_name varchar2(100),
+customer_address varchar2(100),
+customer_zipcode number,
+customer_state varchar2(50),
+customer_email varchar2(100),
+customer_credit varchar(50)
+);
+
+insert into CUSTOMER_INFO 
+values (1, 'Stacey', '13b Leafcrest Ln, Fairfax, Virginia', 20405, 'Virginia', 'stacey@gmail.com', 102);
+insert into CUSTOMER_INFO 
+values (2, 'Namrata', '5346 Jamestowne Ct, Baltimore, Maryland', 21229, 'Maryland', 'namrata@gmail.com',108);
+insert into CUSTOMER_INFO 
+values (3, 'Sheryl', '102 Des Plaines, Chicago, Illinois', 60018, 'Illinois', 'sheryl@gmail.com', 103);
+insert into CUSTOMER_INFO 
+values (4, 'Joanna', '502 Scount Street, Tampa, Florida', 33592, 'Florida', 'joanna@gmail.com', 105);
+insert into CUSTOMER_INFO 
+values (5, 'Sharon', '9030 Helena Ct, Boston, Massachusetts', 53224, 'Massachusetts', 'sharon@gmail.com', 106);
+insert into CUSTOMER_INFO 
+values (6, 'Sudheer', '14 Horadan Way, Milwaukee , Wisconsin', 02111, 'Wisconsin', 'susheer@gmail.com', 109);
+insert into CUSTOMER_INFO 
+values (7, 'Prabhakar', '15 Horadan St, Milwaukee , Wisconsin', 02111, 'Wisconsin', 'prabhakar@gmail.com', 109);
+
+--------------------------------------------------------------------------
+create table DISCOUNT_INFO (
+discount_id int primary key,
+discount_description varchar2(500),
+discount_type number,
+discount_amount number
+);
+
+insert into DISCOUNT_INFO values (11, 'free delivery', 1, 0);
+insert into DISCOUNT_INFO values (12, 'fixed percent off the total charge', 2, 10);
+insert into DISCOUNT_INFO values (13, 'fixed amount off the total charge', 3, 10);
+insert into DISCOUNT_INFO values (14, 'fixed percent off the total charge', 2, 10);
+insert into DISCOUNT_INFO values (15, 'free delivery', 1, 0);
+insert into DISCOUNT_INFO values (16, 'fixed amount off the total charge', 3, 10);
+
+
+---------------------------------------------------------------------------
+create table SALES_TAX (
+state varchar2(50) primary key,
+tax_rate number
+);
+
+insert into SALES_TAX values ('Maryland',2);
+insert into SALES_TAX values ('Massachusetts',5);
+insert into SALES_TAX values ('Virginia',3);
+insert into SALES_TAX values ('Illinois',6);
+insert into SALES_TAX values ('Florida',5);
+insert into SALES_TAX values ('Wisconsin',5);
+
+----------------------------------------------------------------------------
+create table CUSTOMER_DISCOUNT (
+customer_id int,
+discount_id int,
+discount_startdate timestamp,
+discount_enddate timestamp,
+foreign key (customer_id) REFERENCES CUSTOMER_INFO(customer_id),
+foreign key (discount_id) REFERENCES DISCOUNT_INFO(discount_id)
+);
+
+insert into CUSTOMER_DISCOUNT values (1, 11, '1-Jan-22', '1-Feb-22');
+insert into CUSTOMER_DISCOUNT values (2, 12, '1-Feb-22', '1-Mar-22');
+insert into CUSTOMER_DISCOUNT values (3, 13, '1-Mar-22', '1-Apr-22');
+insert into CUSTOMER_DISCOUNT values (4, 14, '1-Apr-22', '1-May-22');
+insert into CUSTOMER_DISCOUNT values (5, 15, '1-May-22', '1-Jun-22');
+insert into CUSTOMER_DISCOUNT values (6, 16, '1-Jun-22', '1-Jul-22');
+
+------------------------------------------------------------------------------
+create table FOOD_CATEGORY (
+category_id int primary key,
+category_name varchar2(100)
+);
+
+insert into FOOD_CATEGORY values (21, 'Breakfast');
+insert into FOOD_CATEGORY values (22, 'Indian');
+insert into FOOD_CATEGORY values (23, 'Mexican');
+insert into FOOD_CATEGORY values (24, 'Japanese');
+insert into FOOD_CATEGORY values (25, 'Bakery');
+insert into FOOD_CATEGORY values (26, 'Jamaican');
+
+
+-------------------------------------------------------------------------------
+create table RESTAURANT_LIST (
+restaurant_id int primary key,
+restaurant_name varchar2(200),
+restaurant_address varchar2(50),
+restaurant_phno number,
+restaurant_status varchar2(10),   --open or closed 
+restaurant_zipcode number, 
+state varchar2(50),
+average_waittime int, 
+average_reviewscore number,
+foreign key (state) REFERENCES SALES_TAX(state)
+);
+
+insert into RESTAURANT_LIST 
+values (31, 'Jamaican Curries','Catonsville, Baltimore, Maryland',4109405043,'open',21229,'Maryland',30,3);
+insert into RESTAURANT_LIST 
+values (32, 'Dunkin Donuts','Pink Ave, Milwaukee, Wisconsin',9885775899,'open',02111,'Wisconsin',3,4.5);
+insert into RESTAURANT_LIST 
+values (33, 'Taco bell','Mallow hills, Tampa, Florida',9490993589,'close',33592,'Florida',4,4.5);
+insert into RESTAURANT_LIST 
+values (34, 'Cake Lmore','Williston, Chicago, Illinois',9949996405,'open',60018,'Illinois',20,4);
+insert into RESTAURANT_LIST 
+values (35, 'Hyderabad House','Chatilly Blvd, Fairfax, Virginia',7075803589,'open',22033,'Virginia',45,2.5);
+insert into RESTAURANT_LIST 
+values (36, 'Coffee cup','Wellington, Milwaukee, Wisconsin',2722256489,'open',02111,'Wisconsin',15,3.5);
+
+
+---------------------------------------------------------------------------------
+create table RESTAURANT_CATEGORY (
+restaurant_id int,
+category_id int,
+category_name varchar2(100),
+foreign key (restaurant_id) REFERENCES RESTAURANT_LIST(restaurant_id),
+foreign key (category_id) REFERENCES FOOD_CATEGORY(category_id)
+);
+
+insert into RESTAURANT_CATEGORY values (31, 26, 'Jamaican');
+insert into RESTAURANT_CATEGORY values (32, 21, 'Breakfast');
+insert into RESTAURANT_CATEGORY values (33, 23, 'Mexican');
+insert into RESTAURANT_CATEGORY values (34, 25, 'Bakery');
+insert into RESTAURANT_CATEGORY values (35, 22, 'Indian');
+insert into RESTAURANT_CATEGORY values (36, 21, 'Breakfast');
+
+ 
+----------------------------------------------------------------------------------
+create table DISHES (
+dish_id int primary key,
+restaurant_id int,
+dish_name varchar2(100),
+dish_price int,
+foreign key (restaurant_id) REFERENCES RESTAURANT_LIST(restaurant_id)
+);
+
+insert into DISHES values (41,35,'Chicken Biryani',25);
+insert into DISHES values (42,35,'Chicken 65',20);
+insert into DISHES values (43,32,'Croissants',15);
+insert into DISHES values (44,36,'Pancakes',10);
+insert into DISHES values (45,34,'Strawberry cake',20);
+insert into DISHES values (46,34,'Mango cake',15);
+insert into DISHES values (47,31,'Rice and beans',12);
+-----------------------------------------------------------------------------------
+create table CUSTOMER_REVIEW (
+review_id int primary key,
+customer_id int,
+restaurant_id int,
+review_date timestamp,
+review_score int,
+review_comments varchar2(500),
+foreign key (customer_id) REFERENCES CUSTOMER_INFO(customer_id),
+foreign key (restaurant_id) REFERENCES RESTAURANT_LIST(restaurant_id)
+);
+
+insert into CUSTOMER_REVIEW values (51, 1, 31,'15-Jan-22',3,'Happy with the quantity, would appreciate more flavour');
+insert into CUSTOMER_REVIEW values (52, 2, 32,'15-Feb-22',5,'Good breakfast with reasonable price');
+insert into CUSTOMER_REVIEW values (53, 3, 33,'15-Mar-22',4,'Taste is good but not authentic');
+insert into CUSTOMER_REVIEW values (54, 4, 34,'15-Apr-22',4.5,'Strawberry cake is delicious, would love to try other items from this bakery');
+insert into CUSTOMER_REVIEW values (55, 5, 35,'15-May-22',5,'AMAZING!');
+insert into CUSTOMER_REVIEW values (56, 6, 36,'15-Jun-22',3.5,'Good');
+
+
+------------------------------------------------------------------------------------
+create table CART (
+cart_id int primary key,
+customer_id int,
+restaurant_id int,
+foreign key (customer_id) REFERENCES CUSTOMER_INFO(customer_id),
+foreign key (restaurant_id) REFERENCES RESTAURANT_LIST(restaurant_id)
+);
+---1,3,4,5,6 (DELIVERY)
+---2 (PICKUP)
+insert into CART values (61, 1, 34);
+insert into CART values (62, 3, 35);
+insert into CART values (63, 4, 34);
+insert into CART values (64, 5, 35);
+insert into CART values (65, 6, 36);
+insert into CART values (66, 2, 32);
+insert into CART values (67, 1, 31);
+
+
+-------------------------------------------------------------------------------------
+create table DISHES_IN_CART (
+cart_id int,
+customer_id int,
+restaurant_id int,
+dish_id int,
+quantity number,
+foreign key (cart_id) REFERENCES CART(cart_id),
+foreign key (customer_id) REFERENCES CUSTOMER_INFO(customer_id),
+foreign key (restaurant_id) REFERENCES RESTAURANT_LIST(restaurant_id),
+foreign key (dish_id) REFERENCES DISHES(dish_id)
+);
+
+insert into DISHES_IN_CART values (61, 1, 34, 46, 1);
+insert into DISHES_IN_CART values (62, 3, 35, 41, 2);
+insert into DISHES_IN_CART values (63, 4, 34, 45, 1);
+insert into DISHES_IN_CART values (64, 5, 35, 42, 3);
+insert into DISHES_IN_CART values (65, 6, 36, 44, 2);
+insert into DISHES_IN_CART values (66, 2, 32, 43, 1);
+insert into DISHES_IN_CART values (67, 1, 31, 47, 2);
+
+
+--------------------------------------------------------------------------------------
+create table CUSTOMER_ORDER (
+order_id int primary key,
+customer_id int,
+restaurant_id int,
+order_time timestamp,
+delivery_time timestamp,
+est_time timestamp,
+delivery_status varchar2(50),
+delivery_method int,
+payment_status varchar2(100),
+order_totalcost int,
+tip int,
+delivery_fee int,
+tax int,
+foreign key (customer_id) REFERENCES CUSTOMER_INFO(customer_id),
+foreign key (restaurant_id) REFERENCES RESTAURANT_LIST(restaurant_id)
+);
+---1 is delivery, 2 as pickup
+---in progress, delivered or canceled
+---paid or not paid
+---total cost =  prices for all ordered dishes 
+---total cost = prices of dishes + sales tax
+insert into CUSTOMER_ORDER 
+values (71, 1,34,to_timestamp('10-Jan-22 13:00','DD-Mon-RR HH24:MI'),to_timestamp('10-Jan-22 13:25','DD-Mon-RR HH24:MI'),to_timestamp('10-Jan-22 13:30','DD-Mon-RR HH24:MI'),'delivered',1,'paid',20.4, 5, 5, 2);
+insert into CUSTOMER_ORDER 
+values (72, 3,35,to_timestamp('10-Mar-22 18:00','DD-Mon-RR HH24:MI'),to_timestamp('10-Mar-22 18:13','DD-Mon-RR HH24:MI'),to_timestamp('10-Mar-22 18:20','DD-Mon-RR HH24:MI'),'in progress',1,'paid',68.25, 10, 5, 5);
+insert into CUSTOMER_ORDER 
+values (73, 4,34,to_timestamp('10-Apr-22 17:00','DD-Mon-RR HH24:MI'),to_timestamp('10-Apr-22 13:05','DD-Mon-RR HH24:MI'),to_timestamp('10-Apr-22 13:10','DD-Mon-RR HH24:MI'),'cancelled',1,'not paid',38.85, 12, 5, 5);
+insert into CUSTOMER_ORDER 
+values (74, 5,35,to_timestamp('10-May-22 12:00','DD-Mon-RR HH24:MI'),to_timestamp('10-May-22 13:15','DD-Mon-RR HH24:MI'),to_timestamp('10-May-22 13:20','DD-Mon-RR HH24:MI'),'delivered',1,'paid',84, 15, 5, 6);
+insert into CUSTOMER_ORDER 
+values (75, 6,36,to_timestamp('10-Jun-22 11:00','DD-Mon-RR HH24:MI'),to_timestamp('10-Jun-22 11:30','DD-Mon-RR HH24:MI'),to_timestamp('10-Jun-22 11:40','DD-Mon-RR HH24:MI'),'in progress',1,'paid',33.6, 10, 2, 3);
+insert into CUSTOMER_ORDER 
+values (76, 2,32,to_timestamp('10-Jul-22 07:00','DD-Mon-RR HH24:MI'),to_timestamp('10-Jul-22 07:10','DD-Mon-RR HH24:MI'),to_timestamp('10-Jul-22 07:15','DD-Mon-RR HH24:MI'),'in progress',2,'paid',21, 5, 0, 5);
+insert into CUSTOMER_ORDER 
+values (77, 4,33,to_timestamp('10-Aug-22 07:00','DD-Mon-RR HH24:MI'),to_timestamp('10-Aug-22 07:10','DD-Mon-RR HH24:MI'),to_timestamp('10-Aug-22 07:15','DD-Mon-RR HH24:MI'),'in progress',1,'paid',34.68, 5, 5, 2);
+
+----------------------------------------------------------------------------------
+create table DISHES_IN_ORDER (
+order_id int,
+dish_id int,
+foreign key (order_id) REFERENCES CUSTOMER_ORDER(order_id),
+foreign key (dish_id) REFERENCES DISHES(dish_id)
+);
+
+insert into DISHES_IN_ORDER values (71, 46);
+insert into DISHES_IN_ORDER values (72, 41);
+insert into DISHES_IN_ORDER values (73, 45);
+insert into DISHES_IN_ORDER values (74, 42);
+insert into DISHES_IN_ORDER values (75, 44);
+insert into DISHES_IN_ORDER values (76, 43);
+insert into DISHES_IN_ORDER values (77, 47);
+
+
+-----------------------------------------------------------------------------------
+create table PAYMENT_DETAILS (
+payment_id int primary key,
+customer_id int,
+payment_time timestamp,
+order_id int,
+payment_amount int,
+payment_method varchar2(50),
+foreign key (customer_id) REFERENCES CUSTOMER_INFO(customer_id),
+foreign key (order_id) REFERENCES CUSTOMER_ORDER(order_id)
+);
+
+insert into PAYMENT_DETAILS values (81, 1,to_timestamp('10-Jan-22 13:00','DD-Mon-RR HH24:MI'),71,20.4,'credit card');
+insert into PAYMENT_DETAILS values (82, 3,to_timestamp('10-Mar-22 18:00','DD-Mon-RR HH24:MI'),72,68.25,'credit card');
+insert into PAYMENT_DETAILS values (83, 4,to_timestamp('10-Apr-22 17:00','DD-Mon-RR HH24:MI'),73,38.85,NULL);
+insert into PAYMENT_DETAILS values (84, 5,to_timestamp('10-May-22 12:00','DD-Mon-RR HH24:MI'),74,84,'paypal');
+insert into PAYMENT_DETAILS values (85, 6,to_timestamp('10-Jun-22 11:00','DD-Mon-RR HH24:MI'),75,33.6,'debit card');
+insert into PAYMENT_DETAILS values (86, 2,to_timestamp('10-Jul-22 07:00','DD-Mon-RR HH24:MI'),76,21,'applepay');
+insert into PAYMENT_DETAILS values (87, 1,to_timestamp('10-Aug-22 07:00','DD-Mon-RR HH24:MI'),77,34.68,'credit card');
+------------------------------------------------------------------------------------
+create table MESSAGE_TABLE (
+message_id int primary key,
+customer_id int,
+message_time timestamp,
+message_body varchar2(1000),
+foreign key (customer_id) REFERENCES CUSTOMER_INFO(customer_id)
+);
+
+insert into MESSAGE_TABLE values (91,1,to_timestamp('10-Jan-22 13:00','DD-Mon-RR HH24:MI'),'make it spicy');
+insert into MESSAGE_TABLE values (92,2,to_timestamp('10-Jul-22 07:00','DD-Mon-RR HH24:MI'),'hot');
+insert into MESSAGE_TABLE values (93,3,to_timestamp('10-Mar-22 18:00','DD-Mon-RR HH24:MI'),'extra sauce');
+insert into MESSAGE_TABLE values (94,4,to_timestamp('10-Apr-22 17:00','DD-Mon-RR HH24:MI'),NULL);
+insert into MESSAGE_TABLE values (95,5,to_timestamp('10-May-22 12:00','DD-Mon-RR HH24:MI'),'salad on the side');
+insert into MESSAGE_TABLE values (96,6,to_timestamp('10-Jun-22 11:00','DD-Mon-RR HH24:MI'),'no bread');
+
+------------------------------------------------------------------------------------
+------------------------------------------------------------------------
+create sequence SEQ_FOR_CUSTOMER_INFO start with 8;
+create sequence SEQ_FOR_CUSTOMER_ORDER start with 78;
+create sequence SEQ_FOR_MESSAGE_TABLE start with 98;
+create sequence SEQ_FOR_PAYMENT_DETAILS start with 88;
+create sequence SEQ_FOR_CUSTOMER_REVIEW start with 57;
+create sequence SEQ_CART_ID start with 68;
+-------------------------------------------------------------------------------------
+select * from CUSTOMER_INFO;
+select * from DISCOUNT_INFO;
+select * from SALES_TAX;
+select * from CUSTOMER_DISCOUNT;
+select * from FOOD_CATEGORY;
+select * from RESTAURANT_LIST;
+select * from RESTAURANT_CATEGORY;
+select * from DISHES;
+select * from CUSTOMER_REVIEW;
+select * from CART;
+select * from DISHES_IN_CART;
+select * from CUSTOMER_ORDER;
+select * from DISHES_IN_ORDER;
+select * from PAYMENT_DETAILS;
+select * from MESSAGE_TABLE;
+---------------------------------------------------------------------------------------
+----Sahithi (feature 1)
+
+
+create or replace procedure ADD_CUSTOMER
+(
+cust_name in varchar2,
+cust_address in varchar2,
+cust_state in varchar2, 
+cust_zip in number, 
+cust_email in varchar2
+)
+as
+email_count int; ---local variables declaration
+BEGIN
+select count(*) into email_count from CUSTOMER_INFO where customer_email = cust_email; ---querying the count of customers with the input email id
+if email_count = 0 then -----to check whether there exists a customer with the given input email id
+insert into CUSTOMER_INFO values (SEQ_FOR_CUSTOMER_INFO.nextval, cust_name, cust_address, cust_zip, cust_state, cust_email, 0); ---if the customer with the input email id does not existsa new customer id is generated and a new row is inserted into the CUSTOMER_INFO table
+dbms_output.put_line('New customer ID: '||SEQ_FOR_CUSTOMER_INFO.currval); ---and the new customer is printed out
+else  ----if the customer already exists
+dbms_output.put_line('Client already exists');
+update CUSTOMER_INFO set customer_address =  cust_address, customer_state = cust_state, customer_zipcode = cust_zip
+where customer_email = cust_email;  ----CUSTOMER_INFO table is updated with the input details of the input customer.
+end if;
+end;
+/
+----------------------------------------------------------------------------------------
+---Sahithi (feature 2)
+----------------------------------------------------------------------------------------
+---Keerthana (Feature 3)
+create or replace procedure REST_CATEGORY(Restaurant_category_name in varchar2)
+is 
+cursor c2 is select RESTAURANT_LIST.restaurant_name, RESTAURANT_LIST.average_reviewscore, 
+  RESTAURANT_LIST.average_waittime, RESTAURANT_LIST.restaurant_zipcode 
+  from RESTAURANT_LIST, RESTAURANT_CATEGORY
+  where RESTAURANT_CATEGORY.restaurant_id = RESTAURANT_LIST.restaurant_id 
+  and instr(category_name, Restaurant_category_name) > 0  -----to check if the input string matches with any of the category names with part of category names in RESTAURANT_CATEGORY table
+  and RESTAURANT_LIST.restaurant_status = 'open';  ---Querying the list of restaurants and their details that match the input category name
+i c2%rowtype;
+cat_count int; ---local variables declaration
+BEGIN
+select count(*) into cat_count from RESTAURANT_CATEGORY
+where instr(category_name, Restaurant_category_name) > 0; ----to check the count of restaurants that match with the input restaurant category
+if cat_count = 0 then  ---if the count is 0
+ dbms_output.put_line('No restaurants under that category');
+else  ----if the count is greater than 0
+open c2;   ---opening cursor
+loop
+fetch c2 into i;  ----fetching the cursor values into i (local variable)
+exit when c2%NOTFOUND;
+  dbms_output.put_line('Restaurant name: '||i.restaurant_name||', Average review score: '||i.average_reviewscore||', Average wait time: '||i.average_waittime||', Zipcode: '||i.restaurant_zipcode);
+end loop;
+end if;
+END;
+/
+
+--------------------------------------------------------------------------------------------
+---Keerthana (Feature 4)
+create or replace procedure DISHES_OFFERED (Rest_ID in int)
+is
+counter int;
+i int;  ---local variables declaration
+cursor c1 is select dish_name, dish_price 
+          from DISHES 
+		  where restaurant_id = Rest_ID;  ----to query the dishes offfered by the input restaurant
+BEGIN
+select count(*) into counter from DISHES where restaurant_id = Rest_ID;  ---to check whether the input restaurant exists or not
+if counter = 0 then 
+ dbms_output.put_line('No such restaurant');
+else 
+ dbms_output.put_line('The dishes offered by Restaurant_ID ' || Rest_ID||' along with their prices are: ');
+ for i in c1 loop ---if the restaurant exists, all the dishes in the restaurant are printed using the for loop
+  dbms_output.put_line('Dish name: '||i.dish_name||', Price: '||i.dish_price);
+ end loop;
+end if;
+END;
+/
+
+--------------------------------------------------------------------------------------------------------------
+----Monica (feature 5)
+create or replace procedure CART_DISHES (valid_cartid int)
+as
+valid_count int;
+cursor c1 is select DISHES.dish_id, DISHES.dish_name, DISHES.dish_price, DISHES_IN_CART.quantity
+from DISHES, DISHES_IN_CART where DISHES_IN_CART.dish_id = DISHES.dish_id and DISHES_IN_CART.cart_id = valid_cartid;  ---to query the dishes in the input cart along with their details like name, price and quantity
+i c1%rowtype; --local variable declaration
+begin
+select count(*) into valid_count from dishes_in_cart where cart_id=valid_cartid;  ---to check whether the cart ID exists
+if valid_count=0 then
+dbms_output.put_line('invalid cart ID');
+else  ---if the cart id exists
+dbms_output.put_line('The dishes in the cart id: '||valid_cartid||' are');
+open c1; ---opening cursor
+loop
+fetch c1 into i; ---fetching the cursor values into i
+exit when c1%NOTFOUND;
+dbms_output.put_line('Dish id: '||i.dish_id||' Dish name: '||i.dish_name||' Dish price: '||i.dish_price||' Quantity: '||i.quantity);  ---printing the items in the cart along with the details of the dish using for loop on c1
+end loop;
+end if;
+end;
+/
+--------------------------------------------------------------------------------
+---Monica (feature 6)
+create or replace procedure REMOVE_DISH (valid_dishid int, valid_cartid int)
+as
+valid_count int;
+dish_quantity int;  ---local variables declaration
+begin 
+select count(*) into valid_count from DISHES_IN_CART where cart_id = valid_cartid and dish_id = valid_dishid;  ---to check whether the input cart id and dish id is valid or not
+if valid_count = 0 then
+dbms_output.put_line('Invalid input');
+else   ----if both are valid
+select quantity into dish_quantity from DISHES_IN_CART where cart_id = valid_cartid and dish_id = valid_dishid;  ----the quantity of the dish is queried
+if dish_quantity > 1 then  ---- if the quantity is greater than 1
+dish_quantity := dish_quantity - 1;  ----the quantity is reduced by 1
+update DISHES_IN_CART set quantity = dish_quantity where cart_id = valid_cartid and dish_id = valid_dishid;  ----and the quantity is updated in DISHES_IN_CART table 
+dbms_output.put_line('quantity reduced');
+elsif dish_quantity = 1 then ---if the quantu=ity is equal to 1
+delete from DISHES_IN_CART where cart_id = valid_cartid and dish_id = valid_dishid; ----then the entire row is deleted
+dbms_output.put_line ('dish removed');
+end if;
+end if;
+end;
+
+-----------------------------------------------------------------------------------------------------------------
+---Sindhu (feature 7)
+create or replace procedure Update_order_status(orid int, status varchar, time1 timestamp)
+is
+varorder_id int;
+pc int;
+ps int;
+mc int;
+ms int;
+varcustomer_id int;
+cursor c1 is select order_id from customer_order where order_id = orid;
+cursor c2 is select message_id from message_table where rownum=1 order by message_id  desc;
+cursor c3 is select customer_id from customer_order where order_id = orid;
+cursor c4 is select payment_id from payment_details where rownum=1 order by payment_id desc ;
+begin
+open c1;
+open c2;
+open c3;
+open c4;
+fetch c1 into varorder_id;
+fetch c2 into mc;
+fetch c3 into varcustomer_id;
+fetch c4 into pc;
+
+if pc is null then
+ps :=0+1;
+else
+ps:= pc +1;
+end if;
+if mc is null then
+ms:= 0+1;
+else
+ms:= mc +1;
+end if;
+if varorder_id is null then
+dbms_output.put_line('Invalid order numner');
+else
+    if status like 'in progress' 
+    then
+    update customer_order
+    set delivery_status =status
+    where order_id = varorder_id;
+    elsif status like 'delivered'
+    then
+    update customer_order
+    set delivery_status = status
+    where order_id = varorder_id;
+    insert into message_table values(ms,varcustomer_id,time1,'Your order has been delivered');   
+    elsif status like 'cancelled'
+    then
+    update customer_order
+    set delivery_status = status
+    where order_id= varorder_id;
+    insert into message_table values(ms,varcustomer_id,time1,'Your order cancelled');  
+insert into payment_details  values(ps,varcustomer_id,time1,varorder_id,(select order_totalcost from customer_order where order_id = varorder_id),'Credit Card');
+else
+    dbms_output.put_line('Invalid Status input');
+    end if;
+end if;
+close c1;
+close c2;
+close c3;
+close c4;
+commit;
+end;
+----------------------------------------------------------------------------------------------------------------
+---Harsha (feature 8)
+create or replace procedure REVIEW_DISHES 
+(
+valid_customerid int, 
+valid_restaurantid int, 
+valid_reviewdate date, 
+valid_reviewscore int,
+valid_reviewcomment varchar
+)
+as
+cust_count int;
+rest_count int;
+input_reviewid int;  ----local variables declaration
+begin
+select count(*) into cust_count from CUSTOMER_REVIEW where customer_id = valid_customerid;  ---query the count of customers with input customer id
+select count(*) into rest_count from CUSTOMER_REVIEW where restaurant_id = valid_restaurantid; ---query the count of restaurants with input restaurant id
+if cust_count = 0 then ---if the count is 0, then no customer exists with the input customer id
+dbms_output.put_line('invalid customer ID');
+elsif rest_count = 0 then  ---if the count is 0, then no restaurant exists with the input restaurant id
+dbms_output.put_line('invalid restuarant ID');
+else  ---if both are valid
+insert into CUSTOMER_REVIEW values(SEQ_FOR_CUSTOMER_REVIEW.nextval,valid_customerid,valid_restaurantid,valid_reviewdate,valid_reviewscore,valid_reviewcomment); ---a new row is inserted into CUSTOMER_REVIEW table with newly generated review ID along with the details given in the input.
+update RESTAURANT_LIST set average_reviewscore = valid_reviewscore where restaurant_id = valid_restaurantid;  ---and the review score is updated in the RESTAURANT_LIST table with the input review score for the corresponding restaurant id
+end if;
+end;
+/
+-----------------------------------------------------------------------------------------------------------------
+---Harsha (Feature 9)
+create or replace procedure DISPLAY_REVIEWS (valid_restaurantid int)
+as
+valid_count int;  ----local variables declaration
+cursor c1 is select review_id, customer_id,review_date, review_score, review_comments
+from CUSTOMER_REVIEW where restaurant_id = valid_restaurantid;  ---to query the review details of the given input restaurant
+i c1%rowtype;
+begin
+select count(*) into valid_count from RESTAURANT_LIST where restaurant_id = valid_restaurantid;  ---to check whether the customer id is valid or not
+if valid_count = 0 then
+dbms_output.put_line('invalid restaurant ID');
+else  ---if it is valid
+dbms_output.put_line('Following are the reviews for restaurant ID:'||valid_restaurantid);
+open c1;  ---opening cursor
+loop
+fetch c1 into i;  ---fetching the cursor values into i
+exit when c1%NOTFOUND;
+dbms_output.put_line('Review id: '||i.review_id||' ,Customer id: '||i.customer_id||' ,Review date: '||i.review_date||' ,Review score: '||i.review_score||' ,Review comments: '||i.review_comments);  ---printing the review details using for loop on cursor 
+end loop;
+end if;
+end;
+/
+----------------------------------------------------------------------------------------------------------------
+----Group features
+----Feature 10
+create or replace procedure ADD_DISHTOCART 
+(
+cust_id in int, 
+rest_id in int,
+dishid in int
+)
+is
+count_cust int;
+count_rest int;  ---local variable declaration
+count_dish int;
+cursor c1 is select cart_id from CART where customer_id = cust_id; ---querying the cart id of the input customer
+cartid int;
+BEGIN
+select count(*) into count_cust from CUSTOMER_INFO where Customer_id = cust_id;  ---to check whether there exists a customer with input customer id.
+if count_cust = 0 then --if no customer with input customer id exists
+ dbms_output.put_line('Invalid customer id');  ----printing invalid customer id
+ return;
+elsif count_cust >= 1 then  ---if there exists a customer with input customer id.
+    select count(*) into count_rest from RESTAURANT_LIST 
+    where restaurant_id = rest_id and restaurant_status = 'open';  ---to check whether there exists a restaurant with the input restaurant id and whether the restaurant is open or not.
+end if;
+if count_rest = 0 then  ---if no restaurant with input restaurant id exists
+ dbms_output.put_line('Invalid restaurant id'); ---printing invalid restaurant id
+ return;
+elsif count_rest >= 1 then  ---if there exists a restaurant with input restaurant id
+    select count(*) into count_dish from DISHES where dish_id = dishid and restaurant_id = rest_id;  ----to check whether there exists a dish with the input dish id which is offered by the input restaurant id
+end if;
+if count_dish = 0 then ---if dish does not exists
+ dbms_output.put_line('Invalid dish id');  ---print invalid dish id
+ return;
+else  ----if all the above conditions satisfy
+open c1;  ---opening the cursor
+loop
+fetch c1 into cartid;
+if c1%notfound then   ----if no cart id is there for the input customer
+        insert into CART(cart_id,customer_id,restaurant_id) values (SEQ_CART_ID.nextval, cust_id, rest_id);  ---creating a new cart id and inserting into CART table
+        dbms_output.put_line('New cart id for customer id: '||cust_id||' is '||SEQ_CART_ID.currval);
+        insert into DISHES_IN_CART(cart_id,customer_id,restaurant_id,dish_id, quantity) values (SEQ_CART_ID.currval,cust_id, rest_id, dishid, 1);   ---inserting a new row in DISHES_IN_CART table
+        exit;
+ else   ----if a cart already exists for the input customer
+        select count(*) into count_dish from DISHES_IN_CART where dish_id = dishid and cart_id = cartid; ---checking whether the input dish is there in the cart
+        if count_dish = 0 then   ---if the dish is not there
+            insert into DISHES_IN_CART values (cartid, rest_id, dishid, 1, cust_id);  ---insert a row with the dish id
+        else   ---if the dish is already there
+            update DISHES_IN_CART set quantity = (quantity + 1)
+            where cart_id = cartid and dish_id = dishid and restaurant_id = rest_id;  ---update the quantity by 1
+        end if;
+        exit;
+    end if;
+end loop;
+end if;
+end;
+/
+--------------------------------------------------------------------------------------------
+---Feature 11
+CREATE OR REPLACE FUNCTION TOTAL_AMOUNT_FOR_DISHES 
+(
+    cartid int,
+	checkout_time timestamp,
+	del_method int,
+    delivery_fee out float,
+    salestax out float
+)
+RETURN FLOAT
+IS
+count_cart int;
+total_amount float;
+delivery_free int :=0;
+Zipcode_equal int;
+stateSalesTax float;
+deliveryFee float;
+tax float;    -------local variables declaration
+BEGIN
+    select count(*) into count_cart from CART where cart_id=cartid; ---to check whether the input cart id is valid or not
+    if count_cart = 0 then
+        dbms_output.put_line('Invalid card ID');
+    else  -----if it is valid
+        select sum(dish_price*quantity) into total_amount from DISHES_IN_CART 
+        join DISHES using(dish_id) where cart_id=cartid;  ----calculating the price of dishes in the cart
+        for i in (select * from CART join CUSTOMER_INFO using(customer_id) 
+                           join CUSTOMER_DISCOUNT using(customer_id) join DISCOUNT_INFO using(discount_id)
+                           where checkout_time >= discount_startdate and checkout_time < discount_enddate) loop  ----looping the i value to check whether for the given cart id, the corresponding customer has any discounts that are valid at the time of the checkout 
+            if(i.discount_description = 'fixed percent off the total charge') then  ----if it is valid, For fixed percentage discount is multiplied by 1-discount rate. E.g., 10% discount means the price should be multiplied by 0.9
+                total_amount:=(total_amount * (1-(i.discount_amount/100)));  ---calculating the total amount when discount type is fixed percent off the total charge
+            elsif(i.discount_description = 'fixed amount off the total charge') then  -- For fixed amount discount, the sum is deducted by that amount
+                total_amount:=(total_amount-i.discount_amount);  ----calculating the total amount when discount type is fixed amount off the total charge
+            elsif(i.discount_description = 'free delivery') then ---- if delivery is free, let delivery_free =1
+                delivery_free:=1;
+            end if;
+        end loop;
+        deliveryFee:=0;  ----if the delivery method is not pickup, delivery fee is added to the result 
+        if(del_method=1) then ---if delivery is not free, then delivery fee will be added to the 
+            if(delivery_free <> 1) then  -- if there is no free delivery dicount we will add the delivery fee the the total amount
+                -- if restraurant and customer has the same zip code "isZipCodeEqualfrom" will be 1 else it will be 0
+                select count(*) into Zipcode_equal from CART join CUSTOMER_INFO CO using(customer_id) join RESTAURANT_LIST RL using(restaurant_id)
+                                                        where cart_id=cartid and CO.customer_zipcode = RL.restaurant_zipcode;
+                if(Zipcode_equal=1) then  ----if the customer zipcode and restaurant zipcode is equal, then the delivery fee is 2$
+                    total_amount:=(total_amount+2);
+                    deliveryFee:=2; 
+                else
+                    total_amount:=(total_amount+5);  ----if the customer zipcode and restaurant zipcode is different, then the delivery fee is 5$
+                    deliveryFee:=5;
+                end if;
+            end if;
+        end if;
+        select tax_rate into salestax from CART join RESTAURANT_LIST using(restaurant_id) 
+        join SALES_TAX using(state) where cart_id=cartid;
+        Tax:=(total_amount*(salestax/100));       ----calculating the tax
+        total_amount:=total_amount+Tax;  ---- calculating the total amount including tax
+        return total_amount;
+    end if;
+END;
+/
+
+---------------------------------------------------------------------------
+---Feature 12
+
+CREATE OR REPLACE PROCEDURE GENERATE_ORDER 
+(
+    cartid int,
+	checkout_time timestamp,
+	del_method int,
+    estimated_time timestamp,
+	tip float,
+	paymentmethod varchar2
+)
+IS
+count_cart int;
+total_amount float;
+deliveryfee float;
+tax float;
+cust_id int;
+rest_id int;
+rest_name RESTAURANT_LIST.restaurant_name%TYPE;
+new_order_id int;    -----------local variables declaration
+BEGIN
+    select count(*) into count_cart from Cart where cart_id = cartid;
+    if(count_cart=0) then
+        dbms_output.put_line('Invalid card ID');
+    else
+       total_amount := TOTAL_AMOUNT_FOR_DISHES(cartid,checkout_time,del_method,deliveryfee,tax); ---calculating the total amount (calling feature 11 function)
+       select customer_id,restaurant_id,restaurant_name into cust_id,rest_id,rest_name 
+       from CART join RESTAURANT_LIST using(restaurant_id) where cart_id = cartid;  ----to query the customer_id, restaurant_id and name for a given cart id
+       insert into CUSTOMER_ORDER(order_id, customer_id,restaurant_id,order_time,delivery_time,est_time,delivery_status,delivery_method,payment_status,order_totalcost,tip,delivery_fee,tax)
+       values (SEQ_FOR_CUSTOMER_ORDER.nextval,cust_id,rest_id,checkout_time,null, estimated_time,null,del_method,null,total_amount,tip,deliveryfee,tax); ---inserting new row with new order_id and input details into CUSTOMER_ORDER table
+       select max(order_id) into new_order_id from CUSTOMER_ORDER;  -- To get the id of the new order idea generated in previous step
+       for i in(select * from DISHES_IN_CART where cart_id=cartid) 
+       loop
+            insert into DISHES_IN_ORDER(order_id, dish_id) values(new_order_id, i.dish_id);  -- inserting the newly genrated order into DISHES_IN_ORDER table
+       end loop;
+       delete from DISHES_IN_CART where cart_id=cartid; -- deleting all the dishes in the cart 
+       delete from CART where cart_id = cartid; ----deleting the whole cart
+       insert into MESSAGE_TABLE(message_id, customer_id,message_time,message_body) 
+              values(SEQ_FOR_MESSAGE_TABLE.nextval, cust_id,'A new order has been generated' ,cust_id);  ---inserting a row in MESSAGE_TABLE with new message and newly generated message id
+       insert into PAYMENT_DETAILS(payment_id, customer_id,payment_time,order_id,payment_amount,payment_method) 
+              values(SEQ_FOR_PAYMENT_DETAILS.nextval,cust_id,checkout_time,new_order_id, total_amount,paymentmethod);  ---inserting a row in PAYMENT_TABLE with new message and newly generated payment id
+       dbms_output.put_line('New order has been generated');      
+    end if;
+END;
+/
+--------------------------------------------------------------------------------
+--Feature 13
+create or replace type Category_List as varray(50) of varchar2(50);  ---varray initialization
+
+create or replace procedure ADVANCED_SEARCH   
+(
+cust_id in int,
+categorylist Category_List,  ---varray declaration
+min_review_score in int,
+waittime in int
+)
+is
+count_cust int;
+cust_zipcode CUSTOMER_INFO.customer_zipcode%type;   ---local variables declaration
+BEGIN
+select count(*) into count_cust from CUSTOMER_INFO where Customer_id = cust_id; ---to check whether the input cutomer id is valid or not
+if count_cust = 0 then 
+ dbms_output.put_line('Invalid customer id');
+else  ----if the customer id is valid
+ select customer_zipcode into cust_zipcode from CUSTOMER_INFO where Customer_ID = cust_id;  ---customer zipcode is retrieved
+ for i in (select * from RESTAURANT_LIST join RESTAURANT_CATEGORY using (Restaurant_ID)
+           where category_name in (select * from table(categorylist))
+           and average_reviewscore >= min_review_score 
+           and average_waittime <= waittime
+           and (substr(restaurant_zipcode,1,4)) = (substr(cust_zipcode,1,4))) loop  ---- querying all the details of the restaurants that match with any one of the restaurant categories , 
+                                                                                    ---- whose average review score is greater than input review score and 
+                                                                                    ---- whose average waittime is less than input waittime and the customer zipcode matches with restaurant zipcode for upto first 4 digits
+        dbms_output.put_line('Restaurant Name: '||i.restaurant_name||' Address: '||i.restaurant_address||' Status: '||i.restaurant_status||' Average review score: '||i.average_reviewscore||' Zipcode: '||i.restaurant_zipcode||' Average wait time: '||i.average_waittime);
+ end loop;
+end if;
+end;
+/
+--------------------------------------------------------------------------------
+ --Feature 14
+CREATE OR REPLACE PROCEDURE REST_RECOM
+(
+cust_id in int
+)
+IS
+count_cust int;  ---local variable declaration
+BEGIN
+select count(*) into count_cust from CUSTOMER_INFO where customer_id = cust_id; ----to check if the input customer id is valid or not
+if(count_cust=0) then
+dbms_output.put_line('Invalid Customer ID');
+return;                                               
+end if;
+------if the customer ID is valid
+dbms_output.put_line('Restaurants that the input customer has visited: ');
+for i in (select distinct(restaurant_id) from CUSTOMER_ORDER where customer_id = cust_id) loop  ---to find restaurants that customer has placed an order
+dbms_output.put_line(i.restaurant_id);
+end loop;
+dbms_output.put_line('The above restaurants are also visited by: ');
+for j in (select distinct(customer_id) from CUSTOMER_ORDER 
+          where restaurant_id in (select restaurant_id from CUSTOMER_ORDER 
+                                  where customer_id=cust_id)) loop    ---to find customers who have placed orders in any restaurant in step 2
+dbms_output.put_line(j.customer_id);
+end loop;
+dbms_output.put_line('The above customers also visit: 33');
+for i in (select * from RESTAURANT_LIST where restaurant_id in
+         (select restaurant_id from CUSTOMER_ORDER where restaurant_id in 
+         (select restaurant_id from CUSTOMER_ORDER where customer_id = cust_id)) 
+          and restaurant_id not in (select restaurant_id from CUSTOMER_ORDER 
+          where customer_id = cust_id)) loop    ---to find other restaurants these customers (in step 3) go to.   
+dbms_output.put_line('Restaurant ID: '||i.restaurant_id||'Restaurant name: '||i.restaurant_name||'Restuarant address:'||i.restaurant_address||'Average review score: '||i.average_reviewscore);
+end loop;
+END;
+/ 
+--------------------------------------------------------------------------------
+
+
